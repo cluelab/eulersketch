@@ -1,0 +1,67 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'net.robyf.jarinjar' version '1.0.6'
+    id 'net.researchgate.release' version '2.6.0'
+}
+
+sourceCompatibility = 1.7
+
+wrapper {
+    gradleVersion = 3.3
+}
+
+repositories {
+    jcenter()
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://repo.adobe.com/nexus/content/groups/public' }
+}
+
+dependencies {
+    compile 'org.apache.commons:commons-collections4:4.1'
+    compile 'org.jgrapht:jgrapht-core:1.0.1'
+    compile 'org.jfree:jfreesvg:3.2'
+    compile 'com.vividsolutions:jts-core:1.14.0'
+    compile 'com.github.timabell:WrapLayout:664ba244c7'
+    compile 'diff_match_patch:diff_match_patch:current'
+    compile 'com.github.cluelab:ocotillo:7d9d4b7e93'
+    compile 'com.github.cluelab:javaGeom:c552083a58'
+
+    testCompile 'junit:junit:4.12'
+}
+
+startScripts.enabled = false
+
+mainClassName = 'it.unisa.di.cluelab.euler.code.EulerSketch'
+
+executableJar {
+    mainClass 'it.unisa.di.cluelab.euler.code.EulerSketch'
+}
+
+jar {     
+    exclude('*planar*')
+    manifest {
+        attributes('Name': 'it/unisa/di/cluelab/euler/code/', 'Implementation-Title': project.name, 'Implementation-Version': version, 'Implementation-Timestamp': new Date())
+    }
+}
+
+applicationDistribution.from('src/main/resources') {
+    include '*planar*'
+}
+
+applicationDistribution.from('.') {
+    include 'README.md', 'LICENSE'
+}
+
+applicationDistribution.from("$buildDir/runJar")
+
+task copyRunJar(type: Copy) {
+    from(jar.outputs.files)
+    into "$buildDir/runJar"
+}
+
+[distZip, distTar]*.dependsOn copyRunJar
+
+distZip.exclude {
+    e -> e.name.endsWith(".jar") && !e.file.path.contains("$buildDir/runJar")
+}
