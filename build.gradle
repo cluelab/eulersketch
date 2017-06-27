@@ -2,7 +2,6 @@ plugins {
     id 'java'
     id 'application'
     id 'net.robyf.jarinjar' version '1.0.6'
-    id 'net.researchgate.release' version '2.6.0'
 }
 
 sourceCompatibility = 1.7
@@ -40,9 +39,6 @@ executableJar {
 
 jar {     
     exclude('*planar*')
-    manifest {
-        attributes('Name': 'it/unisa/di/cluelab/euler/code/', 'Implementation-Title': project.name, 'Implementation-Version': version, 'Implementation-Timestamp': new Date())
-    }
 }
 
 applicationDistribution.from('src/main/resources') {
@@ -56,12 +52,13 @@ applicationDistribution.from('.') {
 applicationDistribution.from("$buildDir/runJar")
 
 task copyRunJar(type: Copy) {
+    delete "$buildDir/runJar"
     from(jar.outputs.files)
     into "$buildDir/runJar"
 }
 
 [distZip, distTar]*.dependsOn copyRunJar
 
-distZip.exclude {
+[distZip, distTar]*.exclude {
     e -> e.name.endsWith(".jar") && !e.file.path.contains("$buildDir/runJar")
 }
