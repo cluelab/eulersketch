@@ -37,6 +37,13 @@ executableJar {
     mainClass 'it.unisa.di.cluelab.euler.code.EulerSketch'
 }
 
+processResources {
+    from('src/main/resources') {
+        include '*.properties'
+        filter org.apache.tools.ant.filters.ReplaceTokens, tokens: ["version": project.version]
+    }
+}
+
 jar {     
     exclude('*planar*')
 }

@@ -70,8 +70,8 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 	private EulerSketchSmoothPanel smootPanel;
 	private List<JList<Entry<EDData, Set<String>>>> componentsLists;
 
-	public EulerSketchEDGenerationPreview(CodeZones codeZones, int targetWidth,
-			int targetHeight, boolean keepGeneratedAspectRatio) {
+	public EulerSketchEDGenerationPreview(CodeZones codeZones, int targetWidth, int targetHeight,
+			boolean keepGeneratedAspectRatio) {
 		this(keepGeneratedAspectRatio, true);
 		this.targetWidth = targetWidth;
 		this.targetHeight = targetHeight;
@@ -80,14 +80,13 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 			List<List<Segment>> intlines = codeZones.zones.get(0).intlines;
 			Region[] rgs = new Region[intlines.size()];
 			for (int i = 0; i < rgs.length; i++)
-				computeED(defaultParams(Arrays.asList((rgs[i] = new Region(
-						intlines.get(i))))));
+				computeED(defaultParams(Arrays.asList((rgs[i] = new Region(intlines.get(i))))));
 			regionList.setListData(rgs);
 		}
 	}
 
-	public EulerSketchEDGenerationPreview(GaussCodeRBC gaussCodeRBC,
-			int targetWidth, int targetHeight, boolean keepGeneratedAspectRatio) {
+	public EulerSketchEDGenerationPreview(GaussCodeRBC gaussCodeRBC, int targetWidth, int targetHeight,
+			boolean keepGeneratedAspectRatio) {
 		this(keepGeneratedAspectRatio, true);
 		this.targetWidth = targetWidth;
 		this.targetHeight = targetHeight;
@@ -96,16 +95,14 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 		if (!rbc.isEmpty()) {
 			Region[] rgs = new Region[rbc.size()];
 			for (int i = 0; i < rgs.length; i++)
-				computeED(defaultParams(Arrays.asList((rgs[i] = new Region(rbc
-						.get(i))))));
+				computeED(defaultParams(Arrays.asList((rgs[i] = new Region(rbc.get(i))))));
 			regionList.setListData(rgs);
 		}
 		regionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	}
 
-	public EulerSketchEDGenerationPreview(GaussCodeRBC gaussCodeRBC,
-			SegmentCode[] externalRegion, int targetWidth, int targetHeight,
-			boolean keepGeneratedAspectRatio) {
+	public EulerSketchEDGenerationPreview(GaussCodeRBC gaussCodeRBC, SegmentCode[] externalRegion, int targetWidth,
+			int targetHeight, boolean keepGeneratedAspectRatio) {
 		this(keepGeneratedAspectRatio, false);
 		this.targetWidth = targetWidth;
 		this.targetHeight = targetHeight;
@@ -116,8 +113,8 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 		regionList.setSelectedIndex(0);
 	}
 
-	public EulerSketchEDGenerationPreview(EulerCodeRBC eulerCodeRBC,
-			int targetWidth, int targetHeight, boolean keepGeneratedAspectRatio) {
+	public EulerSketchEDGenerationPreview(EulerCodeRBC eulerCodeRBC, int targetWidth, int targetHeight,
+			boolean keepGeneratedAspectRatio) {
 		this(keepGeneratedAspectRatio, false);
 		this.targetWidth = targetWidth;
 		this.targetHeight = targetHeight;
@@ -128,36 +125,31 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 		regionList.setSelectedIndex(0);
 	}
 
-	public EulerSketchEDGenerationPreview(
-			List<Entry<List<EDData>, Set<String>>> codes, int targetWidth,
+	public EulerSketchEDGenerationPreview(List<Entry<List<EDData>, Set<String>>> codes, int targetWidth,
 			int targetHeight, boolean keepGeneratedAspectRatio) {
 		this(keepGeneratedAspectRatio, false);
 		this.targetWidth = targetWidth;
 		this.targetHeight = targetHeight;
 
 		JPanel componentsPanel = new JPanel();
-		componentsPanel.setLayout(new BoxLayout(componentsPanel,
-				BoxLayout.Y_AXIS));
+		componentsPanel.setLayout(new BoxLayout(componentsPanel, BoxLayout.Y_AXIS));
 		JLabel lblSelectComponents = new JLabel("Select component codes:");
 		componentsPanel.add(lblSelectComponents);
 
-		componentsLists = new ArrayList<JList<Entry<EDData, Set<String>>>>(
-				codes.size());
+		componentsLists = new ArrayList<JList<Entry<EDData, Set<String>>>>(codes.size());
 
 		for (Entry<List<EDData>, Set<String>> e : codes) {
 			Vector<Entry<EDData, Set<String>>> cdata = new Vector<Entry<EDData, Set<String>>>();
 			Set<String> withins = e.getValue();
 			for (EDData c : e.getKey()) {
-				cdata.add(new AbstractMap.SimpleImmutableEntry<EDData, Set<String>>(
-						c, withins) {
+				cdata.add(new AbstractMap.SimpleImmutableEntry<EDData, Set<String>>(c, withins) {
 					private static final long serialVersionUID = 1L;
 
 					@Override
 					public String toString() {
 						StringBuilder sb = new StringBuilder("maxSymLbl=");
 						sb.append(getKey().getMaxSymLbl() + "; zoneCount=[");
-						for (Entry<Set<String>, Integer> e : getKey()
-								.getRegionCount().entrySet()) {
+						for (Entry<Set<String>, Integer> e : getKey().getRegionCount().entrySet()) {
 							Set<String> zone = e.getKey();
 							if (zone.isEmpty())
 								sb.append('\u2205');
@@ -172,8 +164,7 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 					}
 				});
 			}
-			JList<Entry<EDData, Set<String>>> curjl = new JList<Entry<EDData, Set<String>>>(
-					cdata);
+			JList<Entry<EDData, Set<String>>> curjl = new JList<Entry<EDData, Set<String>>>(cdata);
 			curjl.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			curjl.addListSelectionListener(regionListSelList);
 			componentsLists.add(curjl);
@@ -191,8 +182,7 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 		this(true, true);
 	}
 
-	public EulerSketchEDGenerationPreview(boolean keepGeneratedAspectRatio,
-			boolean showRegionList) {
+	public EulerSketchEDGenerationPreview(boolean keepGeneratedAspectRatio, boolean showRegionList) {
 		this.defaultKeepGeneratedAspectRatio = keepGeneratedAspectRatio;
 		this.generatedEDs = new HashMap<GenParams, Result>();
 		regionListSelList = new ListSelectionListener() {
@@ -213,25 +203,18 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 								computeED(genParams);
 						} else if (gen.eulerCode != null) {
 							previewPanel.setEulerCode(gen.eulerCode);
-							Dimension prefSize = previewPanel
-									.getPreferredSize();
+							Dimension prefSize = previewPanel.getPreferredSize();
 							Dimension curSize = previewScrollPane.getSize();
 							float scale = previewPanel.getScale();
-							float scaleWidth = curSize.width
-									/ (prefSize.width / scale);
-							float scaleHeight = curSize.height
-									/ (prefSize.height / scale);
-							previewPanel.setScale(Math.min(scaleWidth,
-									scaleHeight));
+							float scaleWidth = curSize.width / (prefSize.width / scale);
+							float scaleHeight = curSize.height / (prefSize.height / scale);
+							previewPanel.setScale(Math.min(scaleWidth, scaleHeight));
 							if (gen.exception == null)
 								messageTextPane
-										.setText(inputCode == null ? gen.eulerCode
-												.getEulerCode(false, true) : "");
+										.setText(inputCode == null ? gen.eulerCode.getEulerCode(false, true) : "");
 							else {
-								messageTextPane.setText(gen.exception
-										.getMessage()
-										+ "<br/>\n"
-										+ gen.exception.getDifferences());
+								messageTextPane.setText(
+										gen.exception.getMessage() + "<br/>\n" + gen.exception.getDifferences());
 								messageTextPane.setCaretPosition(0);
 							}
 						} else if (gen.exception != null) {
@@ -251,8 +234,7 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 		previewPanel = new EulerSketchInputPanel();
 		previewPanel.setEnabled(false);
 
-		previewScrollPane = new JScrollPane(previewPanel,
-				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
+		previewScrollPane = new JScrollPane(previewPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		previewScrollPane.setPreferredSize(new Dimension(250, 250));
 		add(previewScrollPane, BorderLayout.CENTER);
@@ -282,11 +264,9 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 		chckbxPanel.setAlignmentX(LEFT_ALIGNMENT);
 		northPanel.add(chckbxPanel);
 
-		chckbxKeepGeneratedAspect = new JCheckBox(
-				"keep generated aspect ratio", keepGeneratedAspectRatio);
+		chckbxKeepGeneratedAspect = new JCheckBox("keep generated aspect ratio", keepGeneratedAspectRatio);
 		ActionListener optionsActList = new ActionListener() {
-			ListSelectionEvent blank = new ListSelectionEvent(regionList, 0, 0,
-					false);
+			ListSelectionEvent blank = new ListSelectionEvent(regionList, 0, 0, false);
 
 			public void actionPerformed(ActionEvent arg0) {
 				regionListSelList.valueChanged(blank);
@@ -308,16 +288,14 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 		iterPanel.setAlignmentX(LEFT_ALIGNMENT);
 		northPanel.add(iterPanel);
 
-		JLabel lblSpringEmbeddingIterations = new JLabel(
-				"spring embedding iterations:");
+		JLabel lblSpringEmbeddingIterations = new JLabel("spring embedding iterations:");
 		iterPanel.add(lblSpringEmbeddingIterations);
 
 		iterComboBox = new JComboBox<String>();
 		iterComboBox.addActionListener(optionsActList);
 		iterPanel.add(iterComboBox);
 		iterComboBox.setModel(new DefaultComboBoxModel<String>(
-				new String[] { "0", "1", "2", "4", "8", "16", "32", "64",
-						"128", "256", "512" }));
+				new String[] { "0", "1", "2", "4", "8", "16", "32", "64", "128", "256", "512" }));
 		iterComboBox.setEditable(true);
 
 		chckbxOutline = new JCheckBox("show only outlines");
@@ -333,8 +311,7 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 		smootPanel = new EulerSketchSmoothPanel(previewPanel);
 		northPanel.add(smootPanel);
 
-		JLabel lblSelectExternalRegions = new JLabel(
-				"Select external region(s):");
+		JLabel lblSelectExternalRegions = new JLabel("Select external region(s):");
 		if (showRegionList)
 			northPanel.add(lblSelectExternalRegions);
 	}
@@ -375,10 +352,8 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 				@Override
 				public void run() {
 					try {
-						res.eulerCode = EulerCodeGeneration.genFromCode(
-								(CodeZones) inputCode, external, targetWidth,
-								targetHeight,
-								genParams.keepGeneratedAspectRatio);
+						res.eulerCode = EulerCodeGeneration.genFromCode((CodeZones) inputCode, external, targetWidth,
+								targetHeight, genParams.keepGeneratedAspectRatio);
 					} catch (GenerationErrorException gee) {
 						res.eulerCode = gee.getWronglyGenerated();
 						res.exception = gee;
@@ -413,13 +388,9 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 				@Override
 				public void run() {
 					try {
-						res.eulerCode = EulerCodeGeneration
-								.genFromGaussCodeRBC((GaussCodeRBC) inputCode,
-										external, genParams.embIterNo,
-										targetWidth, targetHeight,
-										genParams.keepGeneratedAspectRatio,
-										genParams.trySplines,
-										genParams.tryGeomShapes);
+						res.eulerCode = EulerCodeGeneration.genFromGaussCodeRBC((GaussCodeRBC) inputCode, external,
+								genParams.embIterNo, targetWidth, targetHeight, genParams.keepGeneratedAspectRatio,
+								genParams.trySplines, genParams.tryGeomShapes);
 					} catch (GenerationErrorException gee) {
 						res.eulerCode = gee.getWronglyGenerated();
 						res.exception = gee;
@@ -440,11 +411,9 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 				public void run() {
 					try {
 						res.eulerCode = EulerCodeGeneration.genFromEulerCode(
-								inputCode == null ? DisconnectedEDs
-										.combine(genParams.getComponents())
+								inputCode == null ? DisconnectedEDs.combine(genParams.getComponents())
 										: (EulerCodeRBC) inputCode,
-								genParams.embIterNo, targetWidth, targetHeight,
-								genParams.keepGeneratedAspectRatio,
+								genParams.embIterNo, targetWidth, targetHeight, genParams.keepGeneratedAspectRatio,
 								genParams.trySplines, genParams.tryGeomShapes);
 					} catch (GenerationErrorException gee) {
 						res.eulerCode = gee.getWronglyGenerated();
@@ -477,18 +446,15 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 				}
 				sel.add(jl.getSelectedValue());
 			}
-			return new GenParams(sel, chckbxKeepGeneratedAspect.isSelected(),
-					iter, chckbxSplines.isSelected(),
+			return new GenParams(sel, chckbxKeepGeneratedAspect.isSelected(), iter, chckbxSplines.isSelected(),
 					chckbxGeomshapes.isSelected());
 		} else
-			return new GenParams(regionList.getSelectedValuesList(),
-					chckbxKeepGeneratedAspect.isSelected(), iter,
+			return new GenParams(regionList.getSelectedValuesList(), chckbxKeepGeneratedAspect.isSelected(), iter,
 					chckbxSplines.isSelected(), chckbxGeomshapes.isSelected());
 	}
 
 	private GenParams defaultParams(List<Region> external) {
-		return new GenParams(external, defaultKeepGeneratedAspectRatio, 0,
-				false, false);
+		return new GenParams(external, defaultKeepGeneratedAspectRatio, 0, false, false);
 	}
 
 	private static class GenParams {
@@ -499,8 +465,7 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 		final boolean trySplines;
 		final boolean tryGeomShapes;
 
-		private GenParams(@SuppressWarnings("rawtypes") List paramList,
-				boolean keepGeneratedAspectRatio, int embIterNo,
+		private GenParams(@SuppressWarnings("rawtypes") List paramList, boolean keepGeneratedAspectRatio, int embIterNo,
 				boolean trySplines, boolean tryGeomShapes) {
 			this.paramList = paramList;
 			this.keepGeneratedAspectRatio = keepGeneratedAspectRatio;
@@ -523,8 +488,7 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 		public int hashCode() {
 			final int prime = 31;
 			int result = prime + embIterNo;
-			result = prime * result
-					+ ((paramList == null) ? 0 : paramList.hashCode());
+			result = prime * result + ((paramList == null) ? 0 : paramList.hashCode());
 			result = prime * result + (keepGeneratedAspectRatio ? 1231 : 1237);
 			result = prime * result + (tryGeomShapes ? 1231 : 1237);
 			return prime * result + (trySplines ? 1231 : 1237);
@@ -596,8 +560,7 @@ public class EulerSketchEDGenerationPreview extends JPanel {
 						out.append(" ERROR: no ciclic sequence");
 						break;
 					}
-					out.append(pCur + "<sub>" + s.curve + "&#775;"
-							+ s.contCurves + "</sub>");
+					out.append(pCur + "<sub>" + s.curve + "&#775;" + s.contCurves + "</sub>");
 				}
 			}
 			if (segmentCodes != null) {

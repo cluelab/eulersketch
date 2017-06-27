@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import javax.swing.JFrame;
@@ -41,18 +42,21 @@ public class EulerSketch extends JFrame {
 			} catch (Exception e) {
 			}
 		}
-		if (path == null) {
-			path = "";
-		} else {
+		if(path != null) {
 			try {
 				File pf = new File(path);
 				if (!pf.isDirectory())
 					path = pf.getParent();
+				if (!path.endsWith("/") && !path.isEmpty())
+					path += "/";
+				if(!new File(path).canWrite())
+					path = null;
 			} catch (Exception e) {
-				path = "";
+				path = null;
 			}
-			if (!path.endsWith("/") && !path.isEmpty())
-				path += "/";
+		}
+		if (path == null) {
+			path = "";
 		}
 		EDDB_FILE = path + "eddb.dat";
 		PROPERTIES_FILE = path + "config.properties";
@@ -63,9 +67,15 @@ public class EulerSketch extends JFrame {
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-        String version = "0.2.0";
-        String aboutMessage = "<html><body>EulerSketch " + version
-                + " by <i>Mattia De Rosa &lt;matderosa@unisa.it&gt;</i><br />with contributions from <i>Rafiq Saleh &lt;rafiqsaleh@hotmail.co.uk&gt;</i><br />All rights reserved &copy;2012-2016. <a href=\"http://cluelab.di.unisa.it\">http://cluelab.di.unisa.it</a><br /><br />The development of the theory and this tool were partially funded by UK EPSRC<br />funded project EP/J010898/1, entitled ADIGE: Automatic Diagram Generation,<br />and by University of Salerno, grant &#8220;Cofinanziamento per attrezzature<br />scientifiche e di supporto, grandi e medie (2005)&#8221;.<br />Research programme provided by Andrew Fish and Gennaro Costagliola.<br /><br />Based on:<ul><li>P. Bottoni, G. Costagliola, and A. Fish. <i>&#8220;Euler diagram encodings&#8221;.<br />Lecture Notes in Artificial Intelligence. 2012. ISSN 0302-9743</i>;</li><li>P. Bottoni, G. Costagliola, M. De Rosa, A. Fish and V. Fuccella.<br /><i>&#8220;Euler diagram codes: interpretation and generation&#8221;</i>. In proc. VINCI 2013;</li><li>G. Costagliola, M. De Rosa, A. Fish, V. Fuccella and R. Saleh.<br /><i>&#8220;Curve-based diagram specification and construction&#8221;</i>. In proc. VL/HCC 2013.</li></ul><br />This program is made available under the terms of the GNU General Public<br />License v3.0 which accompanies this distribution, and is available at<br />http://www.gnu.org/licenses/gpl.html<br /><br />This software include works form:<ul><li>Open Graph Drawing Framework http://www.ogdf.net</li><li>Ocotillo http://www.cs.arizona.edu/~paolosimonetto/</li><li>Planarity-Related Graph Algorithms http://code.google.com/p/planarity/</li><li>Diff Match and Patch http://code.google.com/p/google-diff-match-patch/</li><li>JavaGeom http://geom-java.sourceforge.net/</li><li>Apache Commons Collections http://commons.apache.org/collections/</li><li>Tango LibreOffice Icon Theme</li><li>Wrap Layout</li></ul></body></html>";
+		Object version = null;
+		final Properties props = new Properties();
+		try (InputStream stream = EulerSketch.class.getResourceAsStream("/config.properties")) {
+			props.load(stream);
+			version = props.remove("version"+"");
+		} catch (IOException e1) {
+		}
+		String aboutMessage = "<html><body>EulerSketch " + (version == null ? "" : version)
+				+ " by <i>Mattia De Rosa &lt;matderosa@unisa.it&gt;</i><br />with contributions from <i>Rafiq Saleh &lt;rafiqsaleh@hotmail.co.uk&gt;</i><br />All rights reserved &copy;2012-2017. <a href=\"http://cluelab.di.unisa.it\">http://cluelab.di.unisa.it</a><br /><br />The development of the theory and this tool were partially funded by UK EPSRC<br />funded project EP/J010898/1, entitled ADIGE: Automatic Diagram Generation,<br />and by University of Salerno, grant &#8220;Cofinanziamento per attrezzature<br />scientifiche e di supporto, grandi e medie (2005)&#8221;.<br />Research programme provided by Andrew Fish and Gennaro Costagliola.<br /><br />Based on:<ul><li>P. Bottoni, G. Costagliola, and A. Fish. <i>&#8220;Euler diagram encodings&#8221;.<br />Lecture Notes in Artificial Intelligence. 2012. ISSN 0302-9743</i>;</li><li>P. Bottoni, G. Costagliola, M. De Rosa, A. Fish and V. Fuccella.<br /><i>&#8220;Euler diagram codes: interpretation and generation&#8221;</i>. In proc. VINCI 2013;</li><li>G. Costagliola, M. De Rosa, A. Fish, V. Fuccella and R. Saleh.<br /><i>&#8220;Curve-based diagram specification and construction&#8221;</i>. In proc. VL/HCC 2013.</li></ul><br />This program is made available under the terms of the GNU General Public<br />License v3.0 which accompanies this distribution, and is available at<br />http://www.gnu.org/licenses/gpl.html<br /><br />This software include works form:<ul><li>Open Graph Drawing Framework http://www.ogdf.net</li><li>Ocotillo http://www.cs.arizona.edu/~paolosimonetto/</li><li>Planarity-Related Graph Algorithms http://code.google.com/p/planarity/</li><li>Diff Match and Patch http://code.google.com/p/google-diff-match-patch/</li><li>JavaGeom http://geom-java.sourceforge.net/</li><li>Apache Commons Collections http://commons.apache.org/collections/</li><li>Tango LibreOffice Icon Theme</li><li>Wrap Layout</li></ul></body></html>";
 		JOptionPane.showMessageDialog(null, aboutMessage,
 				"EulerSketch - About", JOptionPane.INFORMATION_MESSAGE);
 		EventQueue.invokeLater(new Runnable() {
@@ -82,7 +92,6 @@ public class EulerSketch extends JFrame {
 					if (eddb == null)
 						eddb = new EDDatabase(getClass().getResourceAsStream(
 								"/diagrams/eddatabase.txt"), EDDB_FILE);
-					Properties props = new Properties();
 					try (FileInputStream in = new FileInputStream(
 							PROPERTIES_FILE)) {
 						props.load(in);
