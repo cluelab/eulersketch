@@ -19,6 +19,7 @@ import it.unisa.di.cluelab.euler.code.gausscode.USymbol;
 import it.unisa.di.cluelab.euler.code.vennGeneration.DiagramCode;
 
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
@@ -27,12 +28,15 @@ import java.io.ObjectInputStream;
 import java.text.ParseException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -47,9 +51,6 @@ import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.PlainDocument;
 
 import uk.co.timwise.wraplayout.WrapLayout;
 import javax.swing.JRadioButton;
@@ -74,8 +75,6 @@ public class EulerSketchEDGenerationDialog extends JDialog {
 	private String curZonesCode;
 	private JTextField widthTextField;
 	private JTextField heightTextField;
-	private JTextField minRegions = new JTextField("");
-	private JTextField maxRegions = new JTextField("");
 	private JCheckBox chckbxKeepGeneratedAspectRatio;
 	private JTextArea codeTextArea;
 	private boolean openNewWindow;
@@ -204,8 +203,6 @@ public class EulerSketchEDGenerationDialog extends JDialog {
 					codeTextArea.setText(curZonesCode);
 					codeTextArea.setCaretPosition(0);
 					zoneOptionsPanel.setVisible(true);
-					minRegions.setText("4");
-					maxRegions.setText("4");
 					noCurves.setSelectedIndex(0);
 					break;
 				case ItemEvent.DESELECTED:
@@ -220,19 +217,22 @@ public class EulerSketchEDGenerationDialog extends JDialog {
 		JSeparator separator = new JSeparator();
 		optionPanel.add(separator);
 
+		JPanel targetSizePanel = new JPanel();
+		targetSizePanel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		optionPanel.add(targetSizePanel);
 		JLabel lblTargetSize = new JLabel("target size:");
-		optionPanel.add(lblTargetSize);
+		targetSizePanel.add(lblTargetSize);
 
 		widthTextField = new JTextField();
-		optionPanel.add(widthTextField);
+		targetSizePanel.add(widthTextField);
 		widthTextField.setHorizontalAlignment(JTextField.RIGHT);
 		widthTextField.setColumns(4);
 
 		JLabel lblX = new JLabel("x");
-		optionPanel.add(lblX);
+		targetSizePanel.add(lblX);
 
 		heightTextField = new JTextField();
-		optionPanel.add(heightTextField);
+		targetSizePanel.add(heightTextField);
 		heightTextField.setColumns(4);
 
 		chckbxKeepGeneratedAspectRatio = new JCheckBox(
@@ -240,10 +240,12 @@ public class EulerSketchEDGenerationDialog extends JDialog {
 		optionPanel.add(chckbxKeepGeneratedAspectRatio);
 
 		zoneOptionsPanel = new JPanel();
+		zoneOptionsPanel.setBorder(
+				BorderFactory.createTitledBorder("Zone label wizard"));
 		zoneOptionsPanel.setVisible(false);
 		optionPanel.add(separator);
 
-		zoneOptionsPanel.add(new JLabel("No. of curves"));
+		zoneOptionsPanel.add(new JLabel("No. of curves:"));
 
 		noCurves = new JComboBox<String>();
 		noCurves.setModel(new DefaultComboBoxModel<String>(new String[] { "2",
@@ -256,43 +258,10 @@ public class EulerSketchEDGenerationDialog extends JDialog {
 				JComboBox<String> combo = (JComboBox<String>) event.getSource();
 				numberOfCuvesSelected = Integer.parseInt((String) combo
 						.getSelectedItem());
-				minRegions.setText("");
-				maxRegions.setText("");
 			}
 		});
 		zoneOptionsPanel.add(noCurves);
-		zoneOptionsPanel.add(new JLabel("Min/Max Regions [Optional]:"));
-		minRegions = new JTextField(4);
-		maxRegions = new JTextField(4);
-		minRegions.setText("3");
-		maxRegions.setText("4");
-		zoneOptionsPanel.add(minRegions);
-		zoneOptionsPanel.add(new JLabel(":"));
-		zoneOptionsPanel.add(maxRegions);
-		final int regionMaxLength = 2;
-		minRegions.setDocument(new PlainDocument() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void insertString(int offs, String str, AttributeSet a)
-					throws BadLocationException {
-				if (getLength() + str.length() <= regionMaxLength)
-					super.insertString(offs, str, a);
-
-			}
-		});
-		maxRegions.setDocument(new PlainDocument() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void insertString(int offs, String str, AttributeSet a)
-					throws BadLocationException {
-				if (getLength() + str.length() <= regionMaxLength)
-					super.insertString(offs, str, a);
-
-			}
-		});
-		JButton zoneLabels = new JButton("Generate zone labels");
+		JButton zoneLabels = new JButton("Generate");
 		zoneOptionsPanel.add(zoneLabels);
 		optionPanel.add(zoneOptionsPanel);
 		zoneLabels.addActionListener(new ActionListener() {
@@ -346,264 +315,108 @@ public class EulerSketchEDGenerationDialog extends JDialog {
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				generated = null;
-				int width = 1, height = 1;
-				int min = 0, max = 0; // TODO
+				int width = 0;
 				try {
 					width = Integer.parseInt(widthTextField.getText());
-					height = Integer.parseInt(heightTextField.getText());
-					min = (minRegions.getText().trim().equals("")) ? 0
-							: Integer.parseInt(minRegions.getText());
-					max = (maxRegions.getText().trim().equals("")) ? 0
-							: Integer.parseInt(maxRegions.getText());
 				} catch (NumberFormatException nfe) {
-					JOptionPane.showMessageDialog(null,
-							"Invalid number entered for minimal regions",
-							"Invalid Input", JOptionPane.WARNING_MESSAGE);
-					return;
 				}
-				/* OLD DATABASE
-				if (edDatabase == null && rdbtnZones.isSelected()) { // old code
-					String[] zones = codeTextArea.getText().substring(0)
-							.replaceAll("\\[|\\]| ", "").split(",");
-					if ((min > 0 && min < zones.length)
-							|| (max > 0 && max < zones.length)) {
-						JOptionPane
-								.showMessageDialog(
-										null,
-										"Min/Max value must be greater than or equal to the number of zones.",
-										"Connected Diagrams Restriction",
-										JOptionPane.WARNING_MESSAGE);
-						return;
-					}
-					if ((max != 0 && min != 0) && (max < min)) {
-						JOptionPane.showMessageDialog(null,
-								"Min value must be less than or equal to Max.",
-								"Connected Diagrams Restriction",
-								JOptionPane.WARNING_MESSAGE);
-						return;
-					}
-					System.out.println("Arr " + Arrays.toString(zones));
-					List<Set<String>> zonesList = new ArrayList<Set<String>>();
-					Set<String> curveLabels = new HashSet<String>();
-					for (String s : zones) {
-						Set<String> zs = new HashSet<String>();
-						for (int i = 0; i < s.length(); i++) {
-							String t = s.substring(i, i + 1).trim()
-									.toUpperCase();
-							zs.add(t);
-							curveLabels.add(t);
-
-						}
-						zonesList.add(zs);
-					}
-					Map<Set<Set<String>>, Set<String>> dzs = DisconnectedEDs.renameDuplicateCurves(DisconnectedEDs
-							.disconnectedEDZones(new LinkedHashSet<Set<String>>(
-									zonesList)));
-					if (dzs.size() > 1) {
-						StringBuilder msg = new StringBuilder(
-								"Disconnected ED.\nConnected components:\n");
-						for (Entry<Set<Set<String>>, Set<String>> e : dzs
-								.entrySet()) {
-							msg.append("\u2022 ");
-							Set<Set<String>> comp = e.getKey();
-							if (!comp.isEmpty()) {
-								for (Set<String> zone : comp) {
-									for (String c : zone)
-										msg.append(c);
-									msg.append(", ");
-								}
-								msg.setLength(msg.length() - 2);
-							}
-							msg.append(" [within ");
-							Set<String> within = e.getValue();
-							if (within.isEmpty())
-								msg.append("\u2205");
-							else
-								for (String c : within)
-									msg.append(c);
-							msg.append("]\n");
-						}
-						JOptionPane.showMessageDialog(
-								EulerSketchEDGenerationDialog.this, msg);
-					}
-					int n = curveLabels.size();
-					String[] initialCurveLabels = new String[n];
-					initialCurveLabels = curveLabels
-							.toArray(initialCurveLabels);
-					String[] newCurveLabels = new String[n];
-					char ch = 'A';
-					for (int i = 0; i < n; i++) {
-						newCurveLabels[i] = "" + ch++;
-					}
-					zonesList = Permutation.renameZoneSet(zonesList,
-							initialCurveLabels, newCurveLabels);
-					Set<Set<String>> zoneSet = new HashSet<Set<String>>();
-					for (Set<String> set : zonesList)
-						zoneSet.add(set);
-					System.out.println("Set " + zoneSet + "\t zonesList "
-							+ zonesList);
-					// zonesList.clear();
-					Map<String, EulerCodeData> codesWithExactMatches = new HashMap<String, EulerCodeData>();
-
-					Database db = new Database();
-					try {
-						Map<String, EulerCodeData> containingSubSets = new HashMap<String, EulerCodeData>();
-						codesWithExactMatches = db
-								.getEulerCodeObjectFromDatabase(
-										curveLabels.size(), min, max, zoneSet,
-										containingSubSets);
-
-						if (codesWithExactMatches.size() == 0
-								&& containingSubSets.size() == 0) {
-							JOptionPane.showMessageDialog(
-									EulerSketchEDGenerationDialog.this,
-									"No exact Matches or subsets found");
-						} else {
-							int selectedOption = -1;
-							if (codesWithExactMatches.size() == 0
-									&& containingSubSets.size() != 0) {
-								selectedOption = JOptionPane
-										.showConfirmDialog(
-												EulerSketchEDGenerationDialog.this,
-												"No exact Matches found!"
-														+ "\n View alternative diagrams containing the given zones as a subset?",
-												"View Alternative Diagrams",
-												JOptionPane.YES_NO_OPTION);
-							}
-							if (selectedOption == -1
-									|| selectedOption == JOptionPane.YES_OPTION) {
-								codesWithExactMatches = (codesWithExactMatches
-										.size() > 0) ? codesWithExactMatches
-										: containingSubSets;
-								ZonesEDGenerationPreview preview2 = new ZonesEDGenerationPreview(
-										codesWithExactMatches, width, height,
-										chckbxKeepGeneratedAspectRatio
-												.isSelected());
-								preview2.setPreviewOptions(previewOptions);
-								int res = JOptionPane.showOptionDialog(
-										EulerSketchEDGenerationDialog.this,
-										preview2, "Zones Generation Preview",
-										JOptionPane.YES_NO_CANCEL_OPTION,
-										JOptionPane.PLAIN_MESSAGE, null,
-										new String[] { "OK", "OK (new window)",
-												"Cancel" }, null);
-
-								openNewWindow = res == JOptionPane.NO_OPTION;
-								if (res != JOptionPane.CANCEL_OPTION) {
-									generated = preview2.getEulerCode();
-									if (generated != null) {
-										if (preview2.getEulerCodeException() == null
-												|| JOptionPane
-														.showConfirmDialog(
-																EulerSketchEDGenerationDialog.this,
-																"ED generated with error(s). Select it anyway?",
-																"Generation error",
-																JOptionPane.YES_NO_OPTION,
-																JOptionPane.PLAIN_MESSAGE) == JOptionPane.YES_OPTION)
-											setVisible(false);
-									}
-								}
-							}
-						}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+				int height = 0;
+				try {
+					height = Integer.parseInt(heightTextField.getText());
+				} catch (NumberFormatException nfe) {
 				}
-				*/
+
 				try {
 					final EulerSketchEDGenerationPreview preview;
-					if (rdbtnGauss.isSelected() || rdbtnEuler.isSelected()
-							|| rdbtnVenn.isSelected() || rdbtnKnot.isSelected()) {
-						if (rdbtnVenn.isSelected()) {
-							String text = codeTextArea.getText();
-							int n = 0;
-							if (text.toLowerCase().startsWith("venn:")) {
-								try {
-									n = Integer.parseInt(text.substring(5)
-											.trim());
-								} catch (NumberFormatException nfe) {
-								}
-							}
-							if (n <= 0)
-								throw new ParseException("Illegal value.", 0);
-							ObjectInputStream ois = null;
-							DiagramCode dc = null;
+					if (rdbtnVenn.isSelected()) {
+						String text = codeTextArea.getText();
+						int n = 0;
+						if (text.toLowerCase().startsWith("venn:")) {
 							try {
-								ois = new ObjectInputStream(getClass()
-										.getResourceAsStream(
-												"/diagrams/venn" + n + ".dat"));
-								dc = (DiagramCode) ois.readObject();
-								preview = new EulerSketchEDGenerationPreview(
-										dc, dc.getOuterFace(), width, height,
-										chckbxKeepGeneratedAspectRatio
-												.isSelected());
-							} catch (FileNotFoundException fnfe) {
-								throw new ParseException("Illegal value.", 0);
-							} catch (IOException | ClassNotFoundException e) {
-								throw new ParseException(e.getMessage(), 0);
-							} finally {
-								if (ois != null)
-									try {
-										ois.close();
-									} catch (IOException e) {
-									}
+								n = Integer.parseInt(text.substring(5)
+										.trim());
+							} catch (NumberFormatException nfe) {
 							}
-						} else if (rdbtnGauss.isSelected()) {
-							GaussCodeRBC gc = new GaussCodeRBC(codeTextArea
-									.getText(), true);
-							preview = new EulerSketchEDGenerationPreview(gc,
-									width, height,
-									chckbxKeepGeneratedAspectRatio.isSelected());
-						} else if (rdbtnEuler.isSelected()) {
-							EulerCodeRBC ec = new EulerCodeRBC(codeTextArea
-									.getText(), true);
-							preview = new EulerSketchEDGenerationPreview(ec,
-									width, height,
-									chckbxKeepGeneratedAspectRatio.isSelected());
-						} else {
-							String[] rows = codeTextArea.getText().trim()
-									.split(",[ ]*");
-							Symbol[][] gaussCode = new Symbol[rows.length][];
-							char[] curveLabels = new char[rows.length];
-							for (int i = 0; i < rows.length; i++) {
-								curveLabels[i] = (char) ('A' + i);
-								String[] points = rows[i].split(" ");
-								gaussCode[i] = new Symbol[points.length];
-								for (int j = 0; j < points.length; j++) {
-									String point = points[j];
-									int last = point.length() - 1;
-									if (last < 2)
-										throw new ParseException(
-												"Wrong symbol at line "
-														+ (i + 1) + ".", i + 1);
-									char uo = point.charAt(0);
-									if (uo != 'U' && uo != 'u' && uo != 'O'
-											&& uo != 'o')
-										throw new ParseException(
-												"Wrong U/O at line " + (i + 1)
-														+ ".", i + 1);
-									char sign = point.charAt(last);
-									if (sign != '+' && sign != '-')
-										throw new ParseException(
-												"Wrong sign at line " + (i + 1)
-														+ ".", i + 1);
+						}
+						if (n <= 0)
+							throw new ParseException("Illegal value.", 0);
+						ObjectInputStream ois = null;
+						DiagramCode dc = null;
+						try {
+							ois = new ObjectInputStream(getClass()
+									.getResourceAsStream(
+										"/diagrams/venn" + n + ".dat"));
+							dc = (DiagramCode) ois.readObject();
+							preview = new EulerSketchEDGenerationPreview(
+									dc, dc.getOuterFace(), width, height,
+									chckbxKeepGeneratedAspectRatio
+											.isSelected());
+						} catch (FileNotFoundException fnfe) {
+							throw new ParseException("Illegal value.", 0);
+						} catch (IOException | ClassNotFoundException e) {
+							throw new ParseException(e.getMessage(), 0);
+						} finally {
+							if (ois != null)
+								try {
+									ois.close();
+								} catch (IOException e) {
+								}
+						}
+					} else if (rdbtnGauss.isSelected()) {
+						GaussCodeRBC gc = new GaussCodeRBC(codeTextArea
+								.getText(), true);
+						preview = new EulerSketchEDGenerationPreview(gc,
+								width, height,
+								chckbxKeepGeneratedAspectRatio.isSelected());
+					} else if (rdbtnEuler.isSelected()) {
+						EulerCodeRBC ec = new EulerCodeRBC(codeTextArea
+								.getText(), true);
+						preview = new EulerSketchEDGenerationPreview(ec,
+								width, height,
+								chckbxKeepGeneratedAspectRatio.isSelected());
+					} else if (rdbtnKnot.isSelected()) {
+						String[] rows = codeTextArea.getText().trim()
+								.split(",[ ]*");
+						Symbol[][] gaussCode = new Symbol[rows.length][];
+						char[] curveLabels = new char[rows.length];
+						for (int i = 0; i < rows.length; i++) {
+							curveLabels[i] = (char) ('A' + i);
+							String[] points = rows[i].split(" ");
+							gaussCode[i] = new Symbol[points.length];
+							for (int j = 0; j < points.length; j++) {
+								String point = points[j];
+								int last = point.length() - 1;
+								if (last < 2)
+									throw new ParseException(
+											"Wrong symbol at line "
+													+ (i + 1) + ".", i + 1);
+								char uo = point.charAt(0);
+								if (uo != 'U' && uo != 'u' && uo != 'O'
+										&& uo != 'o')
+									throw new ParseException(
+											"Wrong U/O at line " + (i + 1)
+													+ ".", i + 1);
+								char sign = point.charAt(last);
+								if (sign != '+' && sign != '-')
+									throw new ParseException(
+											"Wrong sign at line " + (i + 1)
+													+ ".", i + 1);
 									gaussCode[i][j] = new USymbol(point
 											.substring(1, point.length() - 1),
 											sign, uo == 'U' || uo == 'u');
-								}
 							}
-							GaussCodeRBC gc = new GaussCodeRBC(curveLabels,
-									gaussCode, true);
-							preview = new EulerSketchEDGenerationPreview(gc,
-									width, height,
-									chckbxKeepGeneratedAspectRatio.isSelected());
 						}
+						GaussCodeRBC gc = new GaussCodeRBC(curveLabels,
+								gaussCode, true);
+						preview = new EulerSketchEDGenerationPreview(gc,
+								width, height,
+								chckbxKeepGeneratedAspectRatio.isSelected());
 					} else if (rdbtnStatic.isSelected()) {
 						CodeZones cz = new CodeZones(codeTextArea.getText());
 						preview = new EulerSketchEDGenerationPreview(cz, width,
 								height, chckbxKeepGeneratedAspectRatio
 										.isSelected());
-					} else {
+					} else if (rdbtnZones.isSelected()) {
 						LinkedHashSet<Set<String>> zones = new LinkedHashSet<Set<String>>();
 						for (String s : codeTextArea.getText().split(
 								"[ ]*[,\\[\\]][ ]*")) {
@@ -618,6 +431,22 @@ public class EulerSketchEDGenerationDialog extends JDialog {
 								.renameDuplicateCurves(DisconnectedEDs
 										.disconnectedEDZones(zones));
 						boolean askSuperSet = true;
+						if (dzs.size() > 1) {
+							Object[] options = { "Exact match",
+									"Alternative diagrams (superset)" };
+							if (JOptionPane.showOptionDialog(
+									EulerSketchEDGenerationDialog.this,
+									"ED with disconnected/duplicated curves."
+											+ "\nView alternative diagrams containing the given zones as a subset?",
+									"View Alternative Diagrams",
+									JOptionPane.YES_NO_OPTION,
+									JOptionPane.QUESTION_MESSAGE, null, options,
+									options[0]) == 1) {
+								askSuperSet = false;
+								dzs = new HashMap<Set<Set<String>>, Set<String>>();
+								dzs.put(zones, Collections.<String> emptySet());
+							}
+						}
 						ArrayList<Entry<List<EDData>, Set<String>>> codes = new ArrayList<Entry<List<EDData>, Set<String>>>();
 						for (Entry<Set<Set<String>>, Set<String>> e : dzs
 								.entrySet()) {
@@ -651,6 +480,8 @@ public class EulerSketchEDGenerationDialog extends JDialog {
 						preview = new EulerSketchEDGenerationPreview(codes,
 								width, height, chckbxKeepGeneratedAspectRatio
 										.isSelected());
+					} else {
+						return;
 					}
 					if (previewOptions != null)
 						preview.setPreviewOptions(previewOptions);

@@ -201,6 +201,7 @@ public class EDDatabase {
 				cn = rn;
 				cp = p;
 			} else {
+				boolean cnRnEq = cn.equals(rn);
 				boolean equals = true;
 				for (Iterator<Set<String>> cnit = cn.iterator(), rnit = rn
 						.iterator(); cnit.hasNext();) {
@@ -214,7 +215,7 @@ public class EDDatabase {
 						break;
 					}
 				}
-				if (equals != cn.equals(rn))
+				if (equals != cnRnEq)
 					throw new IllegalStateException();
 			}
 		}
