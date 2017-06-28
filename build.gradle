@@ -29,6 +29,25 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
+sourceSets {
+    gen {
+        compileClasspath += main.output + sourceSets.main.compileClasspath
+        runtimeClasspath += main.output + sourceSets.main.runtimeClasspath
+    }
+}
+
+task genVennRun(type: JavaExec) {
+    classpath sourceSets.gen.runtimeClasspath
+    main = "it.unisa.di.cluelab.euler.code.vennGeneration.VennGeneration"
+    args findProperty("outdir") ?: []
+}
+
+task genEDDatabaseRun(type: JavaExec) {
+    classpath sourceSets.gen.runtimeClasspath
+    main = "it.unisa.di.cluelab.euler.code.zoneGeneration.EDDatabaseGeneration"
+    args findProperty("outdir") ?: []
+}
+
 startScripts.enabled = false
 
 mainClassName = 'it.unisa.di.cluelab.euler.code.EulerSketch'
