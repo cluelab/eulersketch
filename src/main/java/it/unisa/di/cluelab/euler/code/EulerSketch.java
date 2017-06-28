@@ -7,7 +7,7 @@
  ******************************************************************************/
 package it.unisa.di.cluelab.euler.code;
 
-import it.unisa.di.cluelab.euler.code.ZoneGeneration.EDDatabase;
+import it.unisa.di.cluelab.euler.code.zoneGeneration.EDDatabase;
 
 import java.awt.EventQueue;
 import java.awt.Window;

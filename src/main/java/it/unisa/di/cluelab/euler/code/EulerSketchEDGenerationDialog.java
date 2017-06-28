@@ -8,10 +8,10 @@
 package it.unisa.di.cluelab.euler.code;
 
 import it.unisa.di.cluelab.euler.code.EulerCodeUtils.CodeZones;
-import it.unisa.di.cluelab.euler.code.ZoneGeneration.DisconnectedEDs;
-import it.unisa.di.cluelab.euler.code.ZoneGeneration.EDDatabase;
-import it.unisa.di.cluelab.euler.code.ZoneGeneration.EDData;
-import it.unisa.di.cluelab.euler.code.ZoneGeneration.ZonesInputDialog;
+import it.unisa.di.cluelab.euler.code.zoneGeneration.DisconnectedEDs;
+import it.unisa.di.cluelab.euler.code.zoneGeneration.EDDatabase;
+import it.unisa.di.cluelab.euler.code.zoneGeneration.EDData;
+import it.unisa.di.cluelab.euler.code.zoneGeneration.ZonesInputDialog;
 import it.unisa.di.cluelab.euler.code.gausscode.EulerCodeRBC;
 import it.unisa.di.cluelab.euler.code.gausscode.GaussCodeRBC;
 import it.unisa.di.cluelab.euler.code.gausscode.Symbol;
