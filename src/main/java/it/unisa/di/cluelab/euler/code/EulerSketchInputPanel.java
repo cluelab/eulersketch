@@ -831,7 +831,7 @@ public class EulerSketchInputPanel extends JPanel {
 								bfg.fillOval(x - 2, y - 2, 5, 5);
 							if(options.segmentShowType == Options.SHOW_NUMBER
 									|| options.segmentShowType == Options.SHOW_POINT_WITH_NUMBER) {
-								String str = pre.getValue() + "-" + cur.getValue();
+								String str = pre.getValue() + "_" + cur.getValue();
 								bfg.drawString(str, Math.max(0, x - (fMetrics.stringWidth(str) / 2)), y + hFM);
 							}
 							else if(options.segmentShowType == Options.SHOW_POINT_WITH_LABEL) {

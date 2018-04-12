@@ -408,6 +408,19 @@ public class EulerCode {
 				}
 			}
 		}
+		// calculate the suggestedLabelPoints for the first curve
+		if (this.curves.isEmpty() && !pl.incidentPointRefs.isEmpty()) {
+			Iterator<IncidentPointRef> it = pl.incidentPointRefs.keySet().iterator();
+			for (IncidentPointRef first = it.next(), pre = first, cur; first != null; pre = cur) {
+				if (it.hasNext())
+					cur = it.next();
+				else {
+					cur = first;
+					first = null;
+				}
+				pre.suggestedLabelPoint = GeomUtils.meanPoint(pl, pre.cRef, pre.dis, cur.cRef, cur.dis);
+			}
+		}
 		this.curves.put(preferredCurveLabel, pl);
 		return preferredCurveLabel;
 	}
