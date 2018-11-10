@@ -17,9 +17,9 @@ repositories {
 }
 
 dependencies {
-    compile 'org.apache.commons:commons-collections4:4.1'
-    compile 'org.jgrapht:jgrapht-core:1.0.1'
-    compile 'org.jfree:jfreesvg:3.2'
+    compile 'org.apache.commons:commons-collections4:4.2'
+    compile 'org.jgrapht:jgrapht-core:1.2.0'
+    compile 'org.jfree:jfreesvg:3.3'
     compile 'com.vividsolutions:jts-core:1.14.0'
     compile 'com.github.timabell:WrapLayout:664ba244c7'
     compile 'diff_match_patch:diff_match_patch:current'
