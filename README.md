@@ -1,16 +1,16 @@
-Usage
+# Usage
 
-Run EulerSketch by double-clicking on the eulersketch-VERSION.jar file or with the following command:
+Run EulerSketch by double-clicking on the eulersketch-VERSION.jar file or with the following command:  
 java -jar eulersketch-VERSION.jar
 
 
-About
+# About
 
-EulerSketch by Mattia De Rosa <matderosa@unisa.it> with contributions from Rafiq Saleh <rafiqsaleh@hotmail.co.uk>
-All rights reserved (C) 2012-2017.
+EulerSketch by Mattia De Rosa <matderosa@unisa.it> with contributions from Rafiq Saleh <rafiqsaleh@hotmail.co.uk>  
+All rights reserved (C) 2012-2018.  
 http://cluelab.di.unisa.it
 
-The development of the theory and this tool were partially funded by UK EPSRC funded project EP/J010898/1, entitled ADIGE: Automatic Diagram Generation, and by University of Salerno, grant "Cofinanziamento per attrezzature scientifiche e di supporto, grandi e medie (2005)".
+The development of the theory and this tool were partially funded by UK EPSRC funded project EP/J010898/1, entitled ADIGE: Automatic Diagram Generation, and by University of Salerno, grant "Cofinanziamento per attrezzature scientifiche e di supporto, grandi e medie (2005)".  
 Research programme provided by Andrew Fish and Gennaro Costagliola.
 
 Based on:
@@ -26,7 +26,7 @@ This software include works form:
 - Ocotillo http://www.cs.arizona.edu/~paolosimonetto/
 - Planarity-Related Graph Algorithms http://code.google.com/p/planarity/
 - Diff Match and Patch http://code.google.com/p/google-diff-match-patch/
-- JavaGeom http://geom-java.sourceforge.net/
+- JavaGeom http://geom-java.sourceforge.net
 - Apache Commons Collections http://commons.apache.org/collections/
 - Tango LibreOffice Icon Theme
 - Wrap Layout
