@@ -1212,8 +1212,9 @@ public class EulerCodeGeneration {
 			for (int i = 0; i < sel.length; i++)
 				curves[i].setSelected(sel[i]);
 			try {
-				if ((new EulerCode(curveLabels, curves, ptLbs, pts))
-						.getGaussCodeRBC().equals(embGC))
+				// embGC.gaussCode contains either USymbols or Symbols
+				if (embGC.equals((new EulerCode(curveLabels, curves, ptLbs, pts))
+						.getGaussCodeRBC()))
 					return;
 			} catch (Exception e) {
 			}
@@ -1223,21 +1224,18 @@ public class EulerCodeGeneration {
 	private static final Comparator<byte[]> ALT_CMP = new Comparator<byte[]>() {
 		@Override
 		public int compare(byte[] o1, byte[] o2) {
-			int n1 = nNotZero(o1);
-			int n2 = nNotZero(o2);
-			if (n1 < n2)
-				return 1;
-			if (n2 > n1)
-				return -1;
-			int c = Integer.compare(sum(o2), sum(o1));
+			int c = Integer.compare(nNotZero(o2), nNotZero(o1));
+			if (c != 0)
+				return c;
+			c = Integer.compare(sum(o2), sum(o1));
 			if (c != 0)
 				return c;
 			for (int i = 0; i < o1.length; i++) {
-				c = Integer.compare(o2[i], o1[i]);
+				c = Byte.compare(o2[i], o1[i]);
 				if (c != 0)
 					return c;
 			}
-			return Integer.compare(o2.hashCode(), o1.hashCode());
+			return 0;
 		}
 
 		int nNotZero(byte[] o) {
