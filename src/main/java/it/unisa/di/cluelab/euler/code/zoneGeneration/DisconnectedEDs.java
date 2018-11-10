@@ -26,7 +26,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
-import org.jgrapht.alg.BiconnectivityInspector;
+import org.jgrapht.Graph;
+import org.jgrapht.alg.connectivity.BiconnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
@@ -84,7 +85,8 @@ public class DisconnectedEDs {
 				g);
 		HashMap<Set<Set<String>>, Set<String>> withinMap = new HashMap<Set<Set<String>>, Set<String>>();
 		for (Set<String> cp : bi.getCutpoints()) {
-			for (Set<Set<String>> comp : bi.getBiconnectedVertexComponents(cp)) {
+			for (Graph<Set<String>, DefaultEdge> block : bi.getBlocks(cp)) {
+				Set<Set<String>> comp = block.vertexSet();
 				boolean allCont = true;
 				for (Set<String> zone : comp) {
 					if (!zone.containsAll(cp)) {
@@ -107,8 +109,8 @@ public class DisconnectedEDs {
 				Collections.<String> emptySet(),
 				new AbstractMap.SimpleEntry<Set<String>, Integer>(Collections
 						.<String> emptySet(), 0));
-		Set<Set<Set<String>>> bvc = bi.getBiconnectedVertexComponents();
-		for (Set<Set<String>> comp : bvc) {
+		for (Graph<Set<String>, DefaultEdge> block : bi.getBlocks()) {
+			Set<Set<String>> comp = block.vertexSet();
 			Set<String> within = withinMap.get(comp);
 			if (within == null)
 				within = Collections.<String> emptySet();
